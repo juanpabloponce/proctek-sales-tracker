@@ -187,12 +187,20 @@ const DashboardPage = ({ user, onLogout, onNavigate }) => {
   }
 
   const loadWeeklyLogs = async () => {
+    // Get Monday of current week
+    const now = new Date()
+    const dayOfWeek = now.getDay() // 0=Sunday, 1=Monday, etc.
+    const monday = new Date(now)
+    monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1))
+    
+    // Get dates from Monday to today
     const dates = []
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date()
-      d.setDate(d.getDate() - i)
-      dates.push(d.toISOString().split('T')[0])
+    const current = new Date(monday)
+    while (current <= now) {
+      dates.push(current.toISOString().split('T')[0])
+      current.setDate(current.getDate() + 1)
     }
+    
     const { data } = await supabase
       .from('daily_logs')
       .select('*')
@@ -217,6 +225,7 @@ const DashboardPage = ({ user, onLogout, onNavigate }) => {
     
     if (!error) {
       setLog(newLog)
+      await loadWeeklyLogs() // Reload weekly totals
       showToast('Guardado')
     } else {
       showToast('Error al guardar', 'error')
