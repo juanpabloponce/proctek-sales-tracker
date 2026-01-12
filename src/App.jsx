@@ -472,7 +472,7 @@ const DashboardPage = ({ user, onLogout, onNavigate }) => {
             </button>
           )}
 
-          <p className="text-center text-white/30 text-xs">"La disciplina es elegir entre lo que quieres AHORA y lo que quieres MÁS."</p>
+          <p className="text-center text-white/30 text-xs">Engineering the Evolution</p>
         </div>
       </div>
     </div>
