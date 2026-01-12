@@ -490,6 +490,17 @@ const AdminPage = ({ onNavigate }) => {
     }
   }
 
+  const deleteUser = async (id, name) => {
+    if (!confirm(`¿Eliminar a ${name}?`)) return
+    const { error } = await supabase.from('users').delete().eq('id', id)
+    if (!error) {
+      await loadUsers()
+      showToastMsg('Usuario eliminado')
+    } else {
+      showToastMsg('Error al eliminar', 'error')
+    }
+  }
+
   if (loading) return <div className="min-h-screen flex items-center justify-center" style={{background: 'linear-gradient(180deg, #0a1628 0%, #0f1f3d 50%, #0a1628 100%)'}}><p className="text-white">Cargando...</p></div>
 
   return (
@@ -534,11 +545,16 @@ const AdminPage = ({ onNavigate }) => {
                     <div className="w-9 h-9 rounded-lg flex items-center justify-center text-sm" style={{background: 'linear-gradient(135deg, #06b6d4 0%, #8b5cf6 100%)'}}><span className="text-white font-bold">{u.name?.charAt(0)?.toUpperCase()}</span></div>
                     <div><p className="font-medium text-white text-sm">{u.name}</p><p className="text-xs text-white/50">{u.email}</p></div>
                   </div>
-                  <select value={u.role} onChange={(e) => updateRole(u.id, e.target.value)} className="px-2 py-1 rounded-lg text-xs font-medium cursor-pointer border-none" style={{background: u.role === ROLES.ADMIN ? 'rgba(139,92,246,0.2)' : 'rgba(6,182,212,0.2)', color: u.role === ROLES.ADMIN ? '#a855f7' : '#22d3ee'}}>
-                    <option value={ROLES.USER} className="bg-gray-900">Usuario</option>
-                    <option value={ROLES.VIEWER} className="bg-gray-900">Viewer</option>
-                    <option value={ROLES.ADMIN} className="bg-gray-900">Admin</option>
-                  </select>
+                  <div className="flex items-center gap-2">
+                    <select value={u.role} onChange={(e) => updateRole(u.id, e.target.value)} className="px-2 py-1 rounded-lg text-xs font-medium cursor-pointer border-none" style={{background: u.role === ROLES.ADMIN ? 'rgba(139,92,246,0.2)' : 'rgba(6,182,212,0.2)', color: u.role === ROLES.ADMIN ? '#a855f7' : '#22d3ee'}}>
+                      <option value={ROLES.USER} className="bg-gray-900">Usuario</option>
+                      <option value={ROLES.VIEWER} className="bg-gray-900">Viewer</option>
+                      <option value={ROLES.ADMIN} className="bg-gray-900">Admin</option>
+                    </select>
+                    <button onClick={() => deleteUser(u.id, u.name)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors" title="Eliminar">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
